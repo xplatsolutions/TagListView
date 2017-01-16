@@ -9,515 +9,527 @@ using System.Reactive.Disposables;
 
 namespace XplatSolutions
 {
-	[Register("TagButton"), DesignTimeVisible(true)]
-	public class TagButton : UIButton
-	{
-		readonly CompositeDisposable Disposables = new CompositeDisposable();
-		UILongPressGestureRecognizer _longPressGestureRecognizer;
-		CloseButton _removeButton = new CloseButton();
+    [Register("TagButton"), DesignTimeVisible(true)]
+    public class TagButton : UIButton
+    {
+        readonly CompositeDisposable Disposables = new CompositeDisposable();
+        UILongPressGestureRecognizer _longPressGestureRecognizer;
 
-		float _cornerRadius = 0;
-		[Export("CornerRadius"), Browsable(true)]
-		public float CornerRadius
-		{
-			get
-			{
-				return _cornerRadius;	
-			}
+        public CloseButton RemoveButton { get; private set; } = new CloseButton();
 
-        	set
-			{
-				_cornerRadius = value;
-				Layer.CornerRadius = _cornerRadius;
-				Layer.MasksToBounds = _cornerRadius > 0;
-				SetNeedsDisplay();
-			}
-		}
+        float _cornerRadius = 0;
+        [Export("CornerRadius"), Browsable(true)]
+        public float CornerRadius
+        {
+            get
+            {
+                return _cornerRadius;
+            }
 
-		float _borderWidth = 0;
-		[Export("BorderWidth"), Browsable(true)]
-		public float BorderWidth
-		{
-			get
-			{
-				return _borderWidth;
-			}
+            set
+            {
+                _cornerRadius = value;
+                Layer.CornerRadius = _cornerRadius;
+                Layer.MasksToBounds = _cornerRadius > 0;
+                SetNeedsDisplay();
+            }
+        }
 
-        	set 
-			{
-				_borderWidth = value;
-				Layer.BorderWidth = _borderWidth;
-				SetNeedsDisplay();
-        	}
-    	}
+        float _borderWidth = 0;
+        [Export("BorderWidth"), Browsable(true)]
+        public float BorderWidth
+        {
+            get
+            {
+                return _borderWidth;
+            }
 
-		UIColor _borderColor;
-		[Export("BorderColor"), Browsable(true)]
-		public UIColor BorderColor
-		{
-			get
-			{
-				return _borderColor;
-			}
+            set
+            {
+                _borderWidth = value;
+                Layer.BorderWidth = _borderWidth;
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_borderColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-        	}
-    	}
-    
-		UIColor _textColor = UIColor.White;
-		[Export("TextColor"), Browsable(true)]
-		public UIColor TextColor
-		{
-			get
-			{
-				return _textColor;
-			}
+        UIColor _borderColor;
+        [Export("BorderColor"), Browsable(true)]
+        public UIColor BorderColor
+        {
+            get
+            {
+                return _borderColor;
+            }
 
-			set
-			{
-				_textColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+            set
+            {
+                _borderColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-    	UIColor _selectedTextColor = UIColor.White;
-		[Export("SelectedTextColor"), Browsable(true)]
-		public UIColor SelectedTextColor
-		{
-			get
-			{
-				return _selectedTextColor;
-			}
+        UIColor _textColor = UIColor.White;
+        [Export("TextColor"), Browsable(true)]
+        public UIColor TextColor
+        {
+            get
+            {
+                return _textColor;
+            }
 
-			set
-			{
-				_selectedTextColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+            set
+            {
+                _textColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-		float _paddingY = 2;
-		[Export("PaddingY"), Browsable(true)]
-		public float PaddingY
-		{
-			get
-			{
-				return _paddingY;
-			}
-				
-			set
-			{
-				_paddingY = value;
-				var insets = TitleEdgeInsets;
-				insets.Top = _paddingY;
-				insets.Bottom = _paddingY;
-				TitleEdgeInsets = insets;
-				SetNeedsDisplay();
-			}
-		}
+        UIColor _selectedTextColor = UIColor.White;
+        [Export("SelectedTextColor"), Browsable(true)]
+        public UIColor SelectedTextColor
+        {
+            get
+            {
+                return _selectedTextColor;
+            }
 
-		float _paddingX = 5;
-		[Export("PaddingX"), Browsable(true)]
-		public float PaddingX
-		{
-			get
-			{
-				return _paddingX;
-			}
+            set
+            {
+                _selectedTextColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_paddingX = value;
-				var insets = TitleEdgeInsets;
-				insets.Left = _paddingX;
-				TitleEdgeInsets = insets;
-				UpdateRightInsets();
-				SetNeedsDisplay();
-			}
-		}
+        float _paddingY = 2;
+        [Export("PaddingY"), Browsable(true)]
+        public float PaddingY
+        {
+            get
+            {
+                return _paddingY;
+            }
 
-		UIColor _tagBackgroundColor = UIColor.Gray;
-		[Export("TagBackgroundColor"), Browsable(true)]
-		public UIColor TagBackgroundColor
-		{
-			get
-			{
-				return _tagBackgroundColor;
-			}
+            set
+            {
+                _paddingY = value;
+                var insets = TitleEdgeInsets;
+                insets.Top = _paddingY;
+                insets.Bottom = _paddingY;
+                TitleEdgeInsets = insets;
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_tagBackgroundColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        float _paddingX = 5;
+        [Export("PaddingX"), Browsable(true)]
+        public float PaddingX
+        {
+            get
+            {
+                return _paddingX;
+            }
 
-		UIColor _highlightedBackgroundColor;
-		[Export("HighlightedBackgroundColor"), Browsable(true)]
-		public UIColor HighlightedBackgroundColor
-		{
-			get
-			{
-				return _highlightedBackgroundColor;
-			}
+            set
+            {
+                _paddingX = value;
+                var insets = TitleEdgeInsets;
+                insets.Left = _paddingX;
+                TitleEdgeInsets = insets;
+                UpdateRightInsets();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_highlightedBackgroundColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        UIColor _tagBackgroundColor = UIColor.Gray;
+        [Export("TagBackgroundColor"), Browsable(true)]
+        public UIColor TagBackgroundColor
+        {
+            get
+            {
+                return _tagBackgroundColor;
+            }
 
-		UIColor _selectedBorderColor;
-		[Export("SelectedBorderColor"), Browsable(true)]
-		public UIColor SelectedBorderColor
-		{
-			get
-			{
-				return _selectedBorderColor;
-			}
+            set
+            {
+                _tagBackgroundColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_selectedBorderColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        UIColor _highlightedBackgroundColor;
+        [Export("HighlightedBackgroundColor"), Browsable(true)]
+        public UIColor HighlightedBackgroundColor
+        {
+            get
+            {
+                return _highlightedBackgroundColor;
+            }
 
-		UIColor _selectedBackgroundColor;
-		[Export("SelectedBackgroundColor"), Browsable(true)]
-		public UIColor SelectedBackgroundColor
-		{
-			get
-			{
-				return _selectedBackgroundColor;
-			}
+            set
+            {
+                _highlightedBackgroundColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_selectedBackgroundColor = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        UIColor _selectedBorderColor;
+        [Export("SelectedBorderColor"), Browsable(true)]
+        public UIColor SelectedBorderColor
+        {
+            get
+            {
+                return _selectedBorderColor;
+            }
 
-		UIFont _textFont = UIFont.SystemFontOfSize(12);
-		public UIFont TextFont
-		{
-			get
-			{
-				return _textFont;
-			}
+            set
+            {
+                _selectedBorderColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_textFont = value;
-				TitleLabel.Font = _textFont;
-				SetNeedsDisplay();
-			}
-		}
+        UIColor _selectedBackgroundColor;
+        [Export("SelectedBackgroundColor"), Browsable(true)]
+        public UIColor SelectedBackgroundColor
+        {
+            get
+            {
+                return _selectedBackgroundColor;
+            }
 
-		bool _isHighlighted;
-		public bool IsHighlighted
-		{
-			get
-			{
-				return _isHighlighted;
-			}
+            set
+            {
+                _selectedBackgroundColor = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_isHighlighted = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        UIFont _textFont = UIFont.SystemFontOfSize(12);
+        public UIFont TextFont
+        {
+            get
+            {
+                return _textFont;
+            }
 
-		bool _isSelected;
-		public bool IsSelected
-		{
-			get
-			{
-				return _isSelected;
-			}
+            set
+            {
+                _textFont = value;
+                TitleLabel.Font = _textFont;
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_isSelected = value;
-				ReloadStyles();
-				SetNeedsDisplay();
-			}
-		}
+        bool _isHighlighted;
+        public bool IsHighlighted
+        {
+            get
+            {
+                return _isHighlighted;
+            }
 
-		void ReloadStyles()
-		{
-			if (IsHighlighted)
-			{
-				if (HighlightedBackgroundColor != null)
-				{
-					BackgroundColor = HighlightedBackgroundColor;
-				}
-			}
-			else if (IsSelected)
-			{
-				BackgroundColor = SelectedBackgroundColor ?? TagBackgroundColor;
-				if (SelectedBorderColor != null ||
-					BorderColor != null)
-				{
-					Layer.BorderColor = SelectedBorderColor.CGColor ?? BorderColor.CGColor;
-				}
-				SetTitleColor(SelectedTextColor, new UIControlState());
-			}
-			else 
-			{
-				BackgroundColor = TagBackgroundColor;
-				if (BorderColor != null)
-				{
-					Layer.BorderColor = BorderColor.CGColor;
-				}
-				SetTitleColor(TextColor, new UIControlState());
-			}
-		}
+            set
+            {
+                _isHighlighted = value;
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-		bool _enableRemoveButton;
-		[Export("EnableRemoveButton"), Browsable(true)]
-		public bool EnableRemoveButton
-		{
-			get
-			{
-				return _enableRemoveButton;
-			}
+        bool _isSelected;
+        public bool IsSelected
+        {
+            get
+            {
+                return _isSelected;
+            }
 
-			set
-			{
-				_enableRemoveButton = value;
-				_removeButton.Hidden = !_enableRemoveButton;
-				UpdateRightInsets();
-				_removeButton.SetNeedsDisplay();
-				SetNeedsDisplay();
-			}
-		}
+            set
+            {
+                _isSelected = value;
+                _onTagSelectedSubject.OnNext(this);
+                ReloadStyles();
+                SetNeedsDisplay();
+            }
+        }
 
-		float _removeButtonIconSize = 12;
-		[Export("RemoveButtonIconSize"), Browsable(true)]
-		public float RemoveButtonIconSize
-		{
-			get
-			{
-				return _removeButtonIconSize;
-			}
+        void ReloadStyles()
+        {
+            if (IsHighlighted)
+            {
+                if (HighlightedBackgroundColor != null)
+                {
+                    BackgroundColor = HighlightedBackgroundColor;
+                }
+            }
+            else if (IsSelected)
+            {
+                BackgroundColor = SelectedBackgroundColor ?? TagBackgroundColor;
+                if (SelectedBorderColor != null ||
+                    BorderColor != null)
+                {
+                    Layer.BorderColor = SelectedBorderColor.CGColor ?? BorderColor.CGColor;
+                }
+                SetTitleColor(SelectedTextColor, new UIControlState());
+            }
+            else
+            {
+                BackgroundColor = TagBackgroundColor;
+                if (BorderColor != null)
+                {
+                    Layer.BorderColor = BorderColor.CGColor;
+                }
+                SetTitleColor(TextColor, new UIControlState());
+            }
+        }
 
-			set
-			{
-				_removeButtonIconSize = value;
-				_removeButton.IconSize = _removeButtonIconSize;
-				UpdateRightInsets();
-				SetNeedsDisplay();
-			}
-		}
+        bool _enableRemoveButton;
+        [Export("EnableRemoveButton"), Browsable(true)]
+        public bool EnableRemoveButton
+        {
+            get
+            {
+                return _enableRemoveButton;
+            }
 
-		float _removeIconLineWidth = 3;
-		[Export("RemoveIconLineWidth"), Browsable(true)]
-		public float RemoveIconLineWidth
-		{
-			get
-			{
-				return _removeIconLineWidth;
-			}
+            set
+            {
+                _enableRemoveButton = value;
+                RemoveButton.Hidden = !_enableRemoveButton;
+                UpdateRightInsets();
+                RemoveButton.SetNeedsDisplay();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_removeIconLineWidth = value;
-				_removeButton.LineWidth = _removeIconLineWidth;
-				_removeButton.SetNeedsDisplay();
-				SetNeedsDisplay();
-			}
-		}
+        float _removeButtonIconSize = 12;
+        [Export("RemoveButtonIconSize"), Browsable(true)]
+        public float RemoveButtonIconSize
+        {
+            get
+            {
+                return _removeButtonIconSize;
+            }
 
-		UIColor _removeIconLineColor = UIColor.White.ColorWithAlpha(0.54f);
-		[Export("RemoveIconLineColor"), Browsable(true)]
-		public UIColor RemoveIconLineColor
-		{
-			get
-			{
-				return _removeIconLineColor;
-			}
+            set
+            {
+                _removeButtonIconSize = value;
+                RemoveButton.IconSize = _removeButtonIconSize;
+                UpdateRightInsets();
+                SetNeedsDisplay();
+            }
+        }
 
-			set
-			{
-				_removeIconLineColor = value;
-				_removeButton.LineColor = _removeIconLineColor;
-				_removeButton.SetNeedsDisplay();
-				SetNeedsDisplay();
-			}
-		}
+        float _removeIconLineWidth = 3;
+        [Export("RemoveIconLineWidth"), Browsable(true)]
+        public float RemoveIconLineWidth
+        {
+            get
+            {
+                return _removeIconLineWidth;
+            }
 
-		readonly Subject<TagButton> _longPressedSubject = new Subject<TagButton>();
-		public IObservable<TagButton> OnLongPressed
-		{
-			get
-			{
-				return _longPressedSubject;
-			}
-		}
+            set
+            {
+                _removeIconLineWidth = value;
+                RemoveButton.LineWidth = _removeIconLineWidth;
+                RemoveButton.SetNeedsDisplay();
+                SetNeedsDisplay();
+            }
+        }
 
-		readonly Subject<TagPressedArgs> _onRemoveButtonTappedSubject = new Subject<TagPressedArgs>();
-		public IObservable<TagPressedArgs> OnRemoveButtonTapped
-		{
-			get
-			{
-				return _onRemoveButtonTappedSubject;
-			}
-		}
+        UIColor _removeIconLineColor = UIColor.White.ColorWithAlpha(0.54f);
+        [Export("RemoveIconLineColor"), Browsable(true)]
+        public UIColor RemoveIconLineColor
+        {
+            get
+            {
+                return _removeIconLineColor;
+            }
 
-		readonly Subject<TagPressedArgs> _onTappedSubject = new Subject<TagPressedArgs>();
-		public IObservable<TagPressedArgs> OnTapped
-		{
-			get
-			{
-				return _onTappedSubject;
-			}
-		}
+            set
+            {
+                _removeIconLineColor = value;
+                RemoveButton.LineColor = _removeIconLineColor;
+                RemoveButton.SetNeedsDisplay();
+                SetNeedsDisplay();
+            }
+        }
 
-		public TagButton(IntPtr handle) : base(handle)
-		{
-		}
+        readonly Subject<TagButton> _longPressedSubject = new Subject<TagButton>();
+        public IObservable<TagButton> OnLongPressed
+        {
+            get
+            {
+                return _longPressedSubject;
+            }
+        }
 
-		public TagButton(string title) : base(CGRect.Empty)
-		{
-			SetTitle(title, new UIControlState());
-			SetupView();
-		}
+        readonly Subject<TagPressedArgs> _onRemoveButtonTappedSubject = new Subject<TagPressedArgs>();
+        public IObservable<TagPressedArgs> OnRemoveButtonTapped
+        {
+            get
+            {
+                return _onRemoveButtonTappedSubject;
+            }
+        }
 
-		[Export("initWithCoder:")]
-		public TagButton(NSCoder coder) : base(coder)
-		{
-			SetupView();
-		}
+        readonly Subject<TagPressedArgs> _onTappedSubject = new Subject<TagPressedArgs>();
+        public IObservable<TagPressedArgs> OnTapped
+        {
+            get
+            {
+                return _onTappedSubject;
+            }
+        }
 
-		void SetupView()
-		{
-			var frame = Frame;
-			frame.Size = IntrinsicContentSize;
-			Frame = frame;
-			Add(_removeButton);
-			_removeButton.TagButton = this;
+        readonly Subject<TagButton> _onTagSelectedSubject = new Subject<TagButton>();
+        public IObservable<TagButton> OnTagSelected
+        {
+            get
+            {
+                return _onTagSelectedSubject;
+            }
+        }
 
-			_longPressGestureRecognizer = new UILongPressGestureRecognizer(HandleLongPressAction);
-			AddGestureRecognizer(_longPressGestureRecognizer);
+        public TagButton(IntPtr handle) : base(handle)
+        {
+        }
 
-			var tagViewTouchUpInsideObservable =
-				Observable.FromEventPattern<EventHandler, EventArgs>(
-					h => TouchUpInside += h,
-					h => TouchUpInside -= h);
+        public TagButton(string title) : base(CGRect.Empty)
+        {
+            SetTitle(title, new UIControlState());
+            SetupView();
+        }
 
-			var tagViewRemoveButtonTouchUpInsideObservable =
-				Observable.FromEventPattern<EventHandler, EventArgs>(
-					h => _removeButton.TouchUpInside += h,
-					h => _removeButton.TouchUpInside -= h);
+        [Export("initWithCoder:")]
+        public TagButton(NSCoder coder) : base(coder)
+        {
+            SetupView();
+        }
 
-			tagViewTouchUpInsideObservable.Subscribe(args => 
-			                                         _onTappedSubject.OnNext(new TagPressedArgs(args.Sender as TagButton, this)))
-			                              .AddTo(Disposables);
+        void SetupView()
+        {
+            var frame = Frame;
+            frame.Size = IntrinsicContentSize;
+            Frame = frame;
+            Add(RemoveButton);
+            RemoveButton.TagButton = this;
 
-			tagViewRemoveButtonTouchUpInsideObservable.Subscribe(args =>
-			                                                     TagViewRemoveButtonTouchUpInsideEventHandler(args.Sender, args.EventArgs))
-										  .AddTo(Disposables);
-		}
+            _longPressGestureRecognizer = new UILongPressGestureRecognizer(HandleLongPressAction);
+            AddGestureRecognizer(_longPressGestureRecognizer);
 
-		void TagViewRemoveButtonTouchUpInsideEventHandler(object sender, EventArgs e)
-		{
-			var closeButton = sender as CloseButton;
-			if (closeButton != null &&
-				closeButton.TagButton != null)
-			{
-				_onRemoveButtonTappedSubject.OnNext(new TagPressedArgs(closeButton.TagButton, this));
-			}
-		}
+            var tagViewTouchUpInsideObservable =
+                Observable.FromEventPattern<EventHandler, EventArgs>(
+                    h => TouchUpInside += h,
+                    h => TouchUpInside -= h);
 
-		void HandleLongPressAction(UILongPressGestureRecognizer sender)
-		{
-			_longPressedSubject.OnNext(this);
-		}
+            var tagViewRemoveButtonTouchUpInsideObservable =
+                Observable.FromEventPattern<EventHandler, EventArgs>(
+                    h => RemoveButton.TouchUpInside += h,
+                    h => RemoveButton.TouchUpInside -= h);
 
-		void UpdateRightInsets()
-		{
-			var insets = TitleEdgeInsets;
-			if (EnableRemoveButton)
-			{
-				insets.Right = PaddingX + RemoveButtonIconSize + PaddingX;
-			}
-			else 
-			{
-				insets.Right = PaddingX;
-			}
-			TitleEdgeInsets = insets;
-		}
+            tagViewTouchUpInsideObservable.Subscribe(args =>
+                                                     _onTappedSubject.OnNext(new TagPressedArgs(args.Sender as TagButton, this)))
+                                          .AddTo(Disposables);
 
-		public override void LayoutSubviews()
-		{
-			base.LayoutSubviews();
+            tagViewRemoveButtonTouchUpInsideObservable.Subscribe(args =>
+                                                                 TagViewRemoveButtonTouchUpInsideEventHandler(args.Sender, args.EventArgs))
+                                          .AddTo(Disposables);
+        }
 
-			if (EnableRemoveButton)
-			{
-				var removeButtonFrame = _removeButton.Frame;
-				var removeButtonFrameSize = removeButtonFrame.Size;
-				removeButtonFrameSize.Width = PaddingX + RemoveButtonIconSize + PaddingX;
-				removeButtonFrame.X = Frame.Width - _removeButton.Frame.Width;
-				removeButtonFrameSize.Height = Frame.Height;
-				removeButtonFrame.Y = 0.0f;
-				removeButtonFrame.Size = removeButtonFrameSize;
-				_removeButton.Frame = removeButtonFrame;
-			}
-		}
+        void TagViewRemoveButtonTouchUpInsideEventHandler(object sender, EventArgs e)
+        {
+            var closeButton = sender as CloseButton;
+            if (closeButton != null &&
+                closeButton.TagButton != null)
+            {
+                _onRemoveButtonTappedSubject.OnNext(new TagPressedArgs(closeButton.TagButton, this));
+            }
+        }
 
-		public override CGSize IntrinsicContentSize
-		{
-			get
-			{
-				CGSize size;
-				if (TitleLabel != null &&
-				    !string.IsNullOrWhiteSpace(TitleLabel.Text))
-				{
-					size = TitleLabel.Text.StringSize(TextFont);
-				}
-				else
-				{
-					size = CGSize.Empty;
-				}
+        void HandleLongPressAction(UILongPressGestureRecognizer sender)
+        {
+            _longPressedSubject.OnNext(this);
+        }
 
-				size.Height = TextFont.PointSize + PaddingY * 2;
-				size.Width += PaddingX * 2;
+        void UpdateRightInsets()
+        {
+            var insets = TitleEdgeInsets;
+            if (EnableRemoveButton)
+            {
+                insets.Right = PaddingX + RemoveButtonIconSize + PaddingX;
+            }
+            else
+            {
+                insets.Right = PaddingX;
+            }
+            TitleEdgeInsets = insets;
+        }
 
-				if (EnableRemoveButton) 
-				{
-					size.Width += RemoveButtonIconSize + PaddingX;
-				}
+        public override void LayoutSubviews()
+        {
+            base.LayoutSubviews();
 
-				return size;
-			}
-		}
+            if (EnableRemoveButton)
+            {
+                var removeButtonFrame = RemoveButton.Frame;
+                var removeButtonFrameSize = removeButtonFrame.Size;
+                removeButtonFrameSize.Width = PaddingX + RemoveButtonIconSize + PaddingX;
+                removeButtonFrame.X = Frame.Width - RemoveButton.Frame.Width;
+                removeButtonFrameSize.Height = Frame.Height;
+                removeButtonFrame.Y = 0.0f;
+                removeButtonFrame.Size = removeButtonFrameSize;
+                RemoveButton.Frame = removeButtonFrame;
+            }
+        }
 
-		protected override void Dispose(bool disposing)
-		{
-			base.Dispose(disposing);
+        public override CGSize IntrinsicContentSize
+        {
+            get
+            {
+                CGSize size;
+                if (TitleLabel != null &&
+                    !string.IsNullOrWhiteSpace(TitleLabel.Text))
+                {
+                    size = TitleLabel.Text.StringSize(TextFont);
+                }
+                else
+                {
+                    size = CGSize.Empty;
+                }
 
-			_longPressedSubject.Dispose();
-			_onTappedSubject.Dispose();
-			_onRemoveButtonTappedSubject.Dispose();
-			RemoveGestureRecognizer(_longPressGestureRecognizer);
-			_longPressGestureRecognizer.Dispose();
-			_removeButton.Dispose();
-			Disposables.Dispose();
-		}
-	}
+                size.Height = TextFont.PointSize + PaddingY * 2;
+                size.Width += PaddingX * 2;
+
+                if (EnableRemoveButton)
+                {
+                    size.Width += RemoveButtonIconSize + PaddingX;
+                }
+
+                return size;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            _longPressedSubject.Dispose();
+            _onTagSelectedSubject.Dispose();
+            _onTappedSubject.Dispose();
+            _onRemoveButtonTappedSubject.Dispose();
+            RemoveGestureRecognizer(_longPressGestureRecognizer);
+            _longPressGestureRecognizer.Dispose();
+            RemoveButton.Dispose();
+            Disposables.Dispose();
+        }
+    }
 }
