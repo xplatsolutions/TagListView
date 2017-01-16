@@ -3,10 +3,10 @@ using UIKit;
 using Foundation;
 using CoreGraphics;
 
-namespace TagListView
+namespace XplatSolutions
 {
 	[Register("CloseButton")]
-	public partial class CloseButton : UIButton
+    internal class CloseButton : UIButton
 	{
 		public float IconSize { get; set; } = 10.0f;
 		public float LineWidth { get; set; } = 1.0f;

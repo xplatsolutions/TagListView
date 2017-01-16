@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>TagListView</id>
+        <version>1.0.0</version>
+        <title>Simple and highly customizable iOS tag list view, in C#</title>
+        <authors>George Taskos</authors>
+        <owners>George Taskos</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Simple and highly customizable iOS tag list view, in C#. This is a porting from the Swift original repository https://github.com/ElaWorkshop/TagListView.</description>
+        <summary />
+        <dependencies>
+            <group targetFramework="Xamarin.iOS0.0">
+                <dependency id="System.Reactive" version="3.1.1" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\TagListView.dll" target="lib\xamarinios\TagListView.dll" />
+    </files>
+</package>

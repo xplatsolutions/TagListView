@@ -8,12 +8,11 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
-using TagListView;
 
-namespace TagListView
+namespace XplatSolutions
 {
 	[Register("TagListView"), DesignTimeVisible(true)]
-	public partial class TagListView : UIView
+	public class TagListView : UIView
 	{
 		readonly CompositeDisposable Disposables = new CompositeDisposable();
 
@@ -506,7 +505,16 @@ namespace TagListView
 		{
 		}
 
-		public override void PrepareForInterfaceBuilder()
+        public TagListView()
+        {
+        }
+
+        [Export("initWithCoder:")]
+        public TagListView(NSCoder coder) : base(coder)
+		{
+        }
+
+        public override void PrepareForInterfaceBuilder()
 		{
 			AddTag("Welcome");
 			AddTag("to");

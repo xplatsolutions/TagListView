@@ -1,4 +1,4 @@
-﻿namespace TagListView
+﻿namespace XplatSolutions
 {
 	public struct TagPressedArgs
 	{

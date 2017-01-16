@@ -7,15 +7,14 @@ using System.Reactive.Subjects;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
 
-namespace TagListView
+namespace XplatSolutions
 {
 	[Register("TagButton"), DesignTimeVisible(true)]
 	public class TagButton : UIButton
 	{
 		readonly CompositeDisposable Disposables = new CompositeDisposable();
 		UILongPressGestureRecognizer _longPressGestureRecognizer;
-
-		public CloseButton RemoveButton { get; private set; } = new CloseButton();
+		CloseButton _removeButton = new CloseButton();
 
 		float _cornerRadius = 0;
 		[Export("CornerRadius"), Browsable(true)]
@@ -301,9 +300,9 @@ namespace TagListView
 			set
 			{
 				_enableRemoveButton = value;
-				RemoveButton.Hidden = !_enableRemoveButton;
+				_removeButton.Hidden = !_enableRemoveButton;
 				UpdateRightInsets();
-				RemoveButton.SetNeedsDisplay();
+				_removeButton.SetNeedsDisplay();
 				SetNeedsDisplay();
 			}
 		}
@@ -320,7 +319,7 @@ namespace TagListView
 			set
 			{
 				_removeButtonIconSize = value;
-				RemoveButton.IconSize = _removeButtonIconSize;
+				_removeButton.IconSize = _removeButtonIconSize;
 				UpdateRightInsets();
 				SetNeedsDisplay();
 			}
@@ -338,8 +337,8 @@ namespace TagListView
 			set
 			{
 				_removeIconLineWidth = value;
-				RemoveButton.LineWidth = _removeIconLineWidth;
-				RemoveButton.SetNeedsDisplay();
+				_removeButton.LineWidth = _removeIconLineWidth;
+				_removeButton.SetNeedsDisplay();
 				SetNeedsDisplay();
 			}
 		}
@@ -356,8 +355,8 @@ namespace TagListView
 			set
 			{
 				_removeIconLineColor = value;
-				RemoveButton.LineColor = _removeIconLineColor;
-				RemoveButton.SetNeedsDisplay();
+				_removeButton.LineColor = _removeIconLineColor;
+				_removeButton.SetNeedsDisplay();
 				SetNeedsDisplay();
 			}
 		}
@@ -410,8 +409,8 @@ namespace TagListView
 			var frame = Frame;
 			frame.Size = IntrinsicContentSize;
 			Frame = frame;
-			Add(RemoveButton);
-			RemoveButton.TagButton = this;
+			Add(_removeButton);
+			_removeButton.TagButton = this;
 
 			_longPressGestureRecognizer = new UILongPressGestureRecognizer(HandleLongPressAction);
 			AddGestureRecognizer(_longPressGestureRecognizer);
@@ -423,8 +422,8 @@ namespace TagListView
 
 			var tagViewRemoveButtonTouchUpInsideObservable =
 				Observable.FromEventPattern<EventHandler, EventArgs>(
-					h => RemoveButton.TouchUpInside += h,
-					h => RemoveButton.TouchUpInside -= h);
+					h => _removeButton.TouchUpInside += h,
+					h => _removeButton.TouchUpInside -= h);
 
 			tagViewTouchUpInsideObservable.Subscribe(args => 
 			                                         _onTappedSubject.OnNext(new TagPressedArgs(args.Sender as TagButton, this)))
@@ -470,14 +469,14 @@ namespace TagListView
 
 			if (EnableRemoveButton)
 			{
-				var removeButtonFrame = RemoveButton.Frame;
+				var removeButtonFrame = _removeButton.Frame;
 				var removeButtonFrameSize = removeButtonFrame.Size;
 				removeButtonFrameSize.Width = PaddingX + RemoveButtonIconSize + PaddingX;
-				removeButtonFrame.X = Frame.Width - RemoveButton.Frame.Width;
+				removeButtonFrame.X = Frame.Width - _removeButton.Frame.Width;
 				removeButtonFrameSize.Height = Frame.Height;
 				removeButtonFrame.Y = 0.0f;
 				removeButtonFrame.Size = removeButtonFrameSize;
-				RemoveButton.Frame = removeButtonFrame;
+				_removeButton.Frame = removeButtonFrame;
 			}
 		}
 
@@ -517,7 +516,7 @@ namespace TagListView
 			_onRemoveButtonTappedSubject.Dispose();
 			RemoveGestureRecognizer(_longPressGestureRecognizer);
 			_longPressGestureRecognizer.Dispose();
-			RemoveButton.Dispose();
+			_removeButton.Dispose();
 			Disposables.Dispose();
 		}
 	}

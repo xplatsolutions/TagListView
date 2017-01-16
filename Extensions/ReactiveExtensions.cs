@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reactive.Disposables;
-namespace TagListView
+
+namespace XplatSolutions
 {
 	internal static class ReactiveExtensions
 	{
